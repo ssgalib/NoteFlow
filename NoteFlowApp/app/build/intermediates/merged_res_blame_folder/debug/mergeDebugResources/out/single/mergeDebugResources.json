@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.example.noteflow.app-debug-55:/xml_backup_rules.xml.flat",
+        "source": "com.example.noteflow.app-main-57:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.example.noteflow.app-debug-55:/xml_data_extraction_rules.xml.flat",
+        "source": "com.example.noteflow.app-main-57:/xml/data_extraction_rules.xml"
+    }
+]
