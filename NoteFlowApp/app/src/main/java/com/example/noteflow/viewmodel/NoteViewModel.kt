@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
 
@@ -34,14 +33,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     ) { category, query ->
         Pair(category, query)
     }.flatMapLatest { (category, query) ->
-        if (query.isNotEmpty()) {
-            noteDao.searchNotes(query)
-        } else if (category == "All") {
-            noteDao.getAllNotes()
-        } else {
-            noteDao.getNotesByCategory(category)
+        when {
+            query.isNotEmpty() -> noteDao.searchNotes(query)
+            category == "All" -> noteDao.getAllNotes()
+            else -> noteDao.getNotesByCategory(category)
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun setCategory(category: String) {
         _selectedCategory.value = category
@@ -94,11 +91,12 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         if (uriString != null) {
             try {
                 val uri = android.net.Uri.parse(uriString)
-                val path = getApplication<Application>().contentResolver.takePersistableUriPermission(
-                    uri,
-                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-                return File(uri.path ?: return null)
+                // For SAF, we need to handle content:// URIs differently
+                // For now, just return the path if it's a file path
+                val path = uri.path
+                if (path != null) {
+                    return File(path)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

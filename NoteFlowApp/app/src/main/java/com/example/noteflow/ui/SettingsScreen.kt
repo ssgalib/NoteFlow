@@ -14,7 +14,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.foundation.BorderStroke
-import java.io.File
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,15 +34,34 @@ fun SettingsScreen(
         vaultPath = prefs.getString("vault_path", "Not set") ?: "Not set"
     }
 
+    // SAF launcher for directory selection
+    val vaultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                // Take persistent permission
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+                
+                // Save URI and path to preferences
+                val prefs = context.getSharedPreferences("noteflow", android.content.Context.MODE_PRIVATE)
+                prefs.edit().apply {
+                    putString("vault_uri", uri.toString())
+                    putString("vault_path", uri.path ?: "Unknown")
+                }
+                
+                vaultPath = uri.path ?: "Unknown"
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun selectVaultFolder() {
-        // Use SAF to let user select directory
-        val intent = android.content.Intent(android.content.Intent.ACTION_OPEN_DOCUMENT_TREE)
-        intent.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        intent.addFlags(android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        intent.addFlags(android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-        
-        // In real app, launch this with ActivityResultContract
-        // For simplicity, we'll just show a message
+        vaultLauncher.launch(null)
     }
 
     Scaffold(

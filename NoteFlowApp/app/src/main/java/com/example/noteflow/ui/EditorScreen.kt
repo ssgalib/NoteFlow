@@ -43,7 +43,7 @@ fun EditorScreen(
     fun saveNoteAndExit() {
         if (title.isNotBlank() || content.isNotBlank()) {
             val note = Note(
-                id = noteId,
+                id = if (noteId > 0) noteId else 0,
                 title = title.ifBlank { "Untitled" },
                 content = content,
                 category = selectedCategory,
