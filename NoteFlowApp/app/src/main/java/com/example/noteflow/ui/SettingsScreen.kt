@@ -1,17 +1,19 @@
 package com.example.noteflow.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.compose.foundation.BorderStroke
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +42,7 @@ fun SettingsScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
+        containerColor = Color.White.copy(alpha = 0.95f),
         topBar = {
             TopAppBar(
                 title = {
@@ -79,10 +81,12 @@ fun SettingsScreen(
             
             Spacer(modifier = Modifier.height(16.dp))
             
+            // Vault Location Card - Liquid Glass
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.5f)),
-                shape = RoundedCornerShape(8.dp)
+                modifier = Modifier.fillMaxWidth().graphicsLayer { alpha = 0.9f },
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.7f)),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -105,11 +109,11 @@ fun SettingsScreen(
             Button(
                 onClick = { selectVaultFolder() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Blue,
+                    containerColor = Color.Blue.copy(alpha = 0.8f),
                     contentColor = Color.White
                 ),
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth().graphicsLayer { alpha = 0.9f }
             ) {
                 Text(
                     text = "Select Vault Folder"

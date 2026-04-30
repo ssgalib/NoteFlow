@@ -14,10 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.BorderStroke
 import androidx.navigation.NavController
 import com.example.noteflow.data.Note
 import com.example.noteflow.viewmodel.NoteViewModel
@@ -31,7 +34,7 @@ fun EditorScreen(
     noteId: Int = 0,
     viewModel: NoteViewModel = viewModel()
 ) {
-    var title by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("Untitled") }
     var content by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Personal") }
     val categories = listOf("Personal", "Work", "Ideas")
@@ -52,7 +55,7 @@ fun EditorScreen(
     }
 
     Scaffold(
-        containerColor = Color.White,
+        containerColor = Color.White.copy(alpha = 0.95f),
         topBar = {
             TopAppBar(
                 title = {
@@ -82,7 +85,7 @@ fun EditorScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Category Selection
+            // Category Selection - Liquid Glass
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -92,49 +95,64 @@ fun EditorScreen(
                 items(categories) { category ->
                     val isSelected = category == selectedCategory
                     Surface(
-                        modifier = Modifier,
-                        color = if (isSelected) Color.Blue else Color.LightGray,
-                        shape = RoundedCornerShape(16.dp)
+                        modifier = Modifier.graphicsLayer { alpha = 0.9f },
+                        color = if (isSelected) Color.Blue.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.6f),
+                        shape = RoundedCornerShape(16.dp),
+                        border = if (!isSelected) androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)) else null
                     ) {
                         Text(
                             text = category,
                             modifier = Modifier
-                                .clickable { selectedCategory = category }
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .clickable { selectedCategory = category },
                             color = if (isSelected) Color.White else Color.DarkGray
                         )
                     }
                 }
             }
 
-            // Title Input
-            BasicTextField(
-                value = title,
-                onValueChange = { title = it },
-                textStyle = TextStyle(
-                    color = Color.DarkGray,
-                    fontSize = 28.sp
-                ),
+            // Title Input - Liquid Glass
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                singleLine = true
-            )
+                color = Color.White.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
+            ) {
+                BasicTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    textStyle = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 28.sp
+                    ),
+                    modifier = Modifier.padding(16.dp),
+                    singleLine = true
+                )
+            }
 
-            // Content Input
-            BasicTextField(
-                value = content,
-                onValueChange = { content = it },
-                textStyle = TextStyle(
-                    color = Color.DarkGray,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp
-                ),
+            // Content Input - Liquid Glass
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .verticalScroll(scrollState)
-            )
+                    .verticalScroll(scrollState),
+                color = Color.White.copy(alpha = 0.7f),
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
+            ) {
+                BasicTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    textStyle = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp
+                    ),
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
     }
 }
